@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.stee.emer.mapper.EmerProposalMapper">
+	<!--
+<select id="findProposalAndContent" parameterType="string"  resultMap="proposalResultMap" > 
+	select t1.ID,t1.NAME,t1.DESCRIPTION,t1.TYPE,t1.SUBTYPE,t1.INCIDENTLEVEL,
+	t1.GENERATE,t1.LASTUPDATE,t3.ID,t3.CONTENT
+	from TR_ERS_PROPOSAL t1 join TR_ERS_PROPOSALMAPPING t2 on t1.id=t2.proposal_id
+	 where t1.id=#{id,jdbcType=VARCHAR}  
+	</select> -->
+	<!--映射任务
+	 <resultMap id="proposalResultMap" type="Proposal">   
+        <id property="id" column="ID" javaType="string" jdbcType="VARCHAR" />  
+        <result property="name" column="NAME" javaType="string" jdbcType="VARCHAR"/>  
+        <result property="description" column="DESCRIPTION" javaType="string" jdbcType="VARCHAR"/>  
+        <result property="type" column="TYPE" javaType="int" jdbcType="INTEGER"/>  
+        <result property="subType" column="SUBTYPE" javaType="int" jdbcType="INTEGER"/>  
+        <result property="incidentLevel" column="INCIDENTLEVEL" javaType="int" jdbcType="INTEGER"/>  
+        <result property="generate" column="GENERATE" javaType="DATE" jdbcType="DATE"/>  
+        <result property="lastUpdate" column="LASTUPDATE" javaType="DATE" jdbcType="DATE"/> 
+        <collection property="propMapping"  ofType="ProposalRelation">    
+            <id property="id" column="id" javaType="string" jdbcType="VARCHAR"/>    
+            <result property="proposal_id" column="PROPOSAL_ID" javaType="string" jdbcType="VARCHAR"/>
+           <result property="content_id" column="CONTENT_ID" javaType="string" jdbcType="VARCHAR"/>    
+          <result property="status" column="STATUS" javaType="string" jdbcType="VARCHAR"/> 
+          <result property="flag" column="FLAG" javaType="string" jdbcType="VARCHAR"/>         	
+        </collection>    
+     </resultMap> -->
+     <parameterMap type="java.util.Map" id="paraMap">
+     	<parameter property="type" jdbcType="INTEGER" mode="IN"/>
+     	<parameter property="subtype" jdbcType="INTEGER" mode="IN"/>
+     	<parameter property="incidentLevel" jdbcType="INTEGER" mode="IN"/>
+     	<parameter property="id" jdbcType="VARCHAR" mode="IN"/>
+     	<parameter property="name" jdbcType="VARCHAR" mode="IN"/>
+     	<parameter property="description" jdbcType="VARCHAR" mode="IN"/>
+     	<parameter property="generate" jdbcType="DATE" mode="IN"/>
+     	<parameter property="lastUpdate" jdbcType="DATE" mode="IN"/>
+     	<parameter property="content" jdbcType="VARCHAR" mode="IN"/>
+     	<parameter property="state" jdbcType="VARCHAR" mode="IN"/>
+     	<parameter property="resultNum" jdbcType="INTEGER" mode="OUT"/>
+     </parameterMap>
+     
+	<insert id="addProposal" parameterMap="paraMap" statementType="CALLABLE">
+		{call proc1(?,?,?,?,?,?,?,?,?,?,?)}
+	<!--	<selectKey keyProperty="id" resultType="String" order="BEFORE">
+			SELECT SYS_GUID() AS id FROM DUAl
+		</selectKey>-->
+		<!-- INSERT INTO TR_ERS_PROPOSAL(
+			ID                ,
+            NAME              ,
+       		DESCRIPTION       ,
+            TYPE              ,
+            SUBTYPE           ,
+            INCIDENTLEVEL           ,
+       		GENERATE          ,
+            LASTUPDATE        ,
+            CONTENT           
+		)VALUES(
+			#{id,jdbcType=VARCHAR},
+			#{name,jdbcType=VARCHAR},
+			#{description,jdbcType=VARCHAR},
+			#{type,jdbcType=VARCHAR},
+			#{subtype,jdbcType=VARCHAR},
+			#{incidentLevel,jdbcType=VARCHAR},
+			#{generate,jdbcType=DATE},
+			#{lastUpdate,jdbcType=DATE},
+			#{content,jdbcType=VARCHAR}
+		) -->
+	</insert>
+	<update id="updateProposal" parameterMap="paraMap" statementType="CALLABLE">
+		{call proc1(?,?,?,?,?,?,?,?,?,?,?)}
+	</update>
+	<select id="findProposalById" parameterType="String" resultType="Proposal">
+		SELECT * FROM TR_ERS_PROPOSAL WHERE ID = #{id,jdbcType=VARCHAR}
+	</select>
+	<select id="getAllProposal" resultType="Proposal">
+		SELECT * FROM TR_ERS_PROPOSAL
+	</select>
+	<select id="findProposalByTAndL" resultType="Proposal">
+		SELECT * FROM TR_ERS_PROPOSAL 
+		WHERE 1 = 1
+		<if test="type != 0">
+			AND
+			TYPE = #{type,jdbcType=INTEGER}
+		</if>
+		<if test="subType != 0">
+			AND
+			SUBTYPE = #{subType,jdbcType=INTEGER}
+		</if>
+		<if test="incidentLevel != 0">
+			AND
+			INCIDENTLEVEL = #{incidentLevel,jdbcType=INTEGER}
+		</if>
+	</select>
+	
+	<!-- <select id="getProposalsByIncident" parameterType="Incident">
+		select * from TR_ERS_PROPOSAL WHERE type =#{type} and subtype=#{subtype} and incidentlevel=#{incidentLevel}
+	</select> -->
+</mapper>

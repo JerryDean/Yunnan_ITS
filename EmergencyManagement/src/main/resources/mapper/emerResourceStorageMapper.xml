@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.stee.emer.mapper.EmerResourceStorageMapper">
+	<insert id="addResourceStorage" parameterType="ResourceStorage">
+	<!-- 	<selectKey keyProperty="id" resultType="String" order="BEFORE">
+			SELECT SYS_GUID() AS ID FROM DUAL
+		</selectKey> -->
+		INSERT INTO TR_ERS_RESOURCESTORAGE(
+				ID,
+				NAME,MANAGER,
+				ROAD,SECTION,
+				POINT,LOCATION,
+				DESCRIPTION,STARTTIME,
+				REMARK
+			) Values(
+	       		#{id,jdbcType=VARCHAR},
+	       		#{name,jdbcType=VARCHAR},
+	       		#{manager,jdbcType=VARCHAR},
+	       		#{road,jdbcType=VARCHAR},
+	       		#{section,jdbcType=VARCHAR},
+	       		#{point,jdbcType=VARCHAR},
+	       		#{location,jdbcType=VARCHAR},
+	       		#{description,jdbcType=VARCHAR},
+	       		#{startTime,jdbcType=DATE},
+	       		#{remark,jdbcType=VARCHAR}
+			)
+	</insert>
+	
+	<delete id="deleteResourceStorage" parameterType="String">
+		DELETE FROM TR_ERS_RESOURCESTORAGE WHERE ID = #{id,jdbcType=VARCHAR}
+	</delete>
+	
+	<update id="updateResourceStorage" parameterType="ResourceStorage">
+		UPDATE TR_ERS_RESOURCESTORAGE SET 
+			NAME = #{name,jdbcType=VARCHAR},
+			MANAGER = #{manager,jdbcType=VARCHAR},
+			ROAD = #{road,jdbcType=VARCHAR},
+			SECTION = #{section,jdbcType=VARCHAR},
+			POINT = #{point,jdbcType=VARCHAR},
+			LOCATION = #{location,jdbcType=VARCHAR},
+			DESCRIPTION = #{description,jdbcType=VARCHAR},
+			STARTTIME = #{startTime,jdbcType=DATE},
+			REMARK = #{remark,jdbcType=VARCHAR}
+		WHERE ID = #{id,jdbcType=VARCHAR}
+	</update>
+	
+	<select id="getResourceStorage" resultType="ResourceStorage">
+		SELECT * FROM TR_ERS_RESOURCESTORAGE
+	</select>
+	
+	<select id="findResourceStorageById" parameterType="String" resultType="ResourceStorage">
+		SELECT * FROM TR_ERS_RESOURCESTORAGE WHERE ID = #{id,jdbcType=VARCHAR}
+	</select>
+</mapper>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.stee.emer.mapper.EmerAttachmentMapper">
+	<resultMap type="AttachmentFileInfo" id="infoMap">
+		<result property="attachmentName" column="ATTACHMENT_NAME"/>
+		<result property="attachmentDesc" column="ATTACHMENT_DESCRIPTION"/>
+		<result property="incidentId" column="INCIDENT_ID"/>
+		<result property="createTime" column="CREATED_DATE" jdbcType="DATE"/>
+		<result property="createBy" column="CREATED_BY"/>
+		<result property="updateTime" column="UPDATED_DATE" jdbcType="DATE"/>
+		<result property="updateBy" column="UPDATED_BY"/>
+		<result property="fileForm" column="FILE_FORM"/>
+	</resultMap>
+	
+	<resultMap type="attachmentContent" id="contentMap">
+		<result property="fileContent" column="ATTACHMENT_CONTENT" jdbcType="BLOB" typeHandler="org.apache.ibatis.type.BlobTypeHandler"></result>
+		<result property="attachmentFileInfoId" column="FILE_ATTACHMENT_ID"></result>
+	</resultMap>
+	<!-- 新增附件信息 -->
+	<insert id="addAttachmentFileInfo" parameterType="AttachmentFileInfo">
+		insert into TR_ERS_FILE_ATTACHMENT (ID,CREATED_DATE,CREATED_BY,UPDATED_DATE,UPDATED_BY,ATTACHMENT_DESCRIPTION,ATTACHMENT_NAME,INCIDENT_ID,FILE_FORM) values
+		(#{id, jdbcType=VARCHAR},
+		#{createTime, jdbcType=DATE},
+		#{createBy, jdbcType=VARCHAR},
+		#{updateTime, jdbcType=DATE},
+		#{updateBy, jdbcType=VARCHAR},
+		#{attachmentDesc, jdbcType=VARCHAR},
+		#{attachmentName, jdbcType=VARCHAR},
+		#{incidentId, jdbcType=VARCHAR},
+		#{fileForm,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<!-- 新增附件内容 -->
+	<insert id="addAttachmentFileContent" parameterType="attachmentContent">
+		insert into TR_ERS_FILE_ATTACHMENT_CONTENT (ID, ATTACHMENT_CONTENT, FILE_ATTACHMENT_ID) values
+		(#{id, jdbcType=VARCHAR},
+		#{fileContent, jdbcType=BLOB},
+		#{attachmentFileInfoId, jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<!-- 更新附件信息 -->
+	<update id="updateAttachmentFileInfo" parameterType="AttachmentFileInfo">
+		update TR_ERS_FILE_ATTACHMENT 
+		<set>
+			<if test="createTime != null">
+				CREATED_DATE = #{createTime,jdbcType=DATE},
+			</if>
+			<if test="createBy != null">
+				CREATED_BY = #{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				UPDATED_DATE = #{updateTime,jdbcType=DATE},
+			</if>
+			<if test="updateBy != null">
+				UPDATED_BY = #{updateBy,jdbcType=VARCHAR},
+			</if>
+			<if test="attachmentDesc != null">
+				ATTACHMENT_DESCRIPTION = #{attachmentDesc,jdbcType=VARCHAR},
+			</if>
+			<if test="attachmentName != null">
+				ATTACHMENT_NAME = #{attachmentName,jdbcType=VARCHAR},
+			</if>
+			<if test="incidentId != null">
+				INCIDENT_ID = #{incidentId,jdbcType=VARCHAR},
+			</if>
+			<if test="fileForm != null">
+				FILE_FORM = #{fileForm,jdbcType=VARCHAR}
+			</if>
+		</set>
+		where id = #{id,jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 更新附件内容 -->
+	<update id="updateAttachmentFileContent" parameterType="attachmentContent">
+		update TR_ERS_FILE_ATTACHMENT_CONTENT set ATTACHMENT_CONTENT = #{fileContent,jdbcType=BLOB} where FILE_ATTACHMENT_ID = #{attachmentFileInfoId,jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 删除附件信息 -->
+	<delete id="deleteAttachmentFileInfo" parameterType="String">
+		delete from TR_ERS_FILE_ATTACHMENT where ID = #{id}
+	</delete>
+	
+	<!-- 删除附件内容 -->
+	<delete id="deleteAttachmentFileContent" parameterType="String">
+		delete from TR_ERS_FILE_ATTACHMENT_CONTENT where FILE_ATTACHMENT_ID = #{id}
+	</delete>
+	
+	<!-- 根据IncidentId 查询对应的附件信息集合  -->
+	<select id="getAttachmentFileInfoByIncidentId" parameterType="String" resultMap="infoMap">
+		select * from TR_ERS_FILE_ATTACHMENT where INCIDENT_ID = #{id}
+	</select>
+	
+	<!-- 根据信息id获取内容 -->
+	<select id="findAttachmentFileContentByInfoId" parameterType="String" resultMap="contentMap">
+		select * from TR_ERS_FILE_ATTACHMENT_CONTENT where FILE_ATTACHMENT_ID = #{id}
+	</select>
+	
+	<!-- 根据事件id删除对应附件信息 -->
+	<delete id="deleteAttachmentFileInfoByIncidentId" parameterType="String">
+		delete from TR_ERS_FILE_ATTACHMENT where INCIDENT_ID = #{id}
+	</delete>
+	
+	<!-- 根据附件编号获取附件信息 -->
+	<select id="findAttachmentFileInfoById" parameterType="String" resultMap="infoMap">
+		select * from TR_ERS_FILE_ATTACHMENT where ID = #{id,jdbcType=VARCHAR}
+	</select>
+	
+</mapper>

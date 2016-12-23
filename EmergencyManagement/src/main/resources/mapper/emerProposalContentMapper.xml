@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.stee.emer.mapper.EmerProposalContentMapper">
+	
+	<select id="getAllProposalContent" resultType="ProposalContent">
+		SELECT * FROM TR_ERS_PROPOSALCONTENT
+	</select>
+	
+	<delete id="deleteProposalContentById" parameterType="String">
+		DELETE FROM TR_ERS_PROPOSALCONTENT WHERE ID = #{id,jdbcType=VARCHAR}
+	</delete>
+	
+	<update id="updateProposalContent" parameterType="ProposalContent">
+		UPDATE TR_ERS_PROPOSALCONTENT SET 
+			CONTENT = #{content,jdbcType=VARCHAR},
+			STARTTIME = #{startTime,jdbcType=DATE},
+			CONTACT = #{contact,jdbcType=VARCHAR},
+			PHONE = #{phone,jdbcType=VARCHAR},
+			DESCRIPTION = #{description,jdbcType=VARCHAR}
+		WHERE ID = #{id,jdbcType=VARCHAR}
+	</update>
+	
+	<insert id="addProposalContent" parameterType="ProposalContent">
+		<selectKey keyProperty="id" resultType="String" order="BEFORE">
+			SELECT SYS_GUID() AS id FROM DUAL 
+		</selectKey>
+		INSERT INTO TR_ERS_PROPOSALCONTENT(
+			ID,
+			CONTENT,STARTTIME,
+			CONTACT,PHONE,
+			DESCRIPTION
+		) VALUES (
+			#{id,jdbcType=VARCHAR},
+			#{content,jdbcType=VARCHAR},
+			#{startTime,jdbcType=DATE},
+			#{contact,jdbcType=VARCHAR},
+			#{phone,jdbcType=VARCHAR},
+			#{description,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+</mapper>

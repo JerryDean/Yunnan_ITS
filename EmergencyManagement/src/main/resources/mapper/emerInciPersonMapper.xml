@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.stee.emer.mapper.EmerInciPersonMapper">
+	
+	<insert id="addInciPerson" parameterType="Inci_Person">
+		<selectKey keyProperty="id" resultType="String" order="BEFORE">
+			Select sys_guid() as id from dual
+		</selectKey>
+		INSERT INTO TR_ERS_INCI_PERSON( 
+			ID, 
+			INCIDENTID,
+			NAME,
+			UNIT,
+			DUTY,
+			PHONE,
+			OTHER
+		)VALUES(
+			#{id,jdbcType=VARCHAR},
+			#{incidentId,jdbcType=VARCHAR},
+			#{name,jdbcType=VARCHAR},
+			#{unit,jdbcType=VARCHAR},
+			#{duty,jdbcType=VARCHAR},
+			#{phone,jdbcType=VARCHAR},
+			#{other,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<delete id="deleteInciPerson" parameterType="String">
+		DELETE FROM TR_ERS_INCI_PERSON WHERE ID = #{id,jdbcType=VARCHAR}
+	</delete>
+	
+	<select id="getAllInciPerson" resultType="Inci_Person">
+		SELECT * FROM TR_ERS_INCI_PERSON
+	</select>
+	
+	<select id="getAllInciPersonByIncidentId" parameterType="String" resultType="Inci_Person">
+		SELECT * FROM TR_ERS_INCI_PERSON WHERE INCIDENTID = #{incidentId,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="findInciPersonById" parameterType="String" resultType="Inci_Person">
+		SELECT * FROM TR_ERS_INCI_PERSON WHERE ID = #{id,jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateInciPerson" parameterType="Inci_Person">
+		UPDATE TR_ERS_INCI_PERSON SET 
+			INCIDENTID = #{incidentId,jdbcType=VARCHAR},
+			NAME = #{name,jdbcType=VARCHAR},
+			UNIT = #{unit,jdbcType=VARCHAR},
+			DUTY = #{duty,jdbcType=VARCHAR},
+			PHONE = #{phone,jdbcType=VARCHAR},
+			OTHER = #{other,jdbcType=VARCHAR}
+		WHERE ID = #{id,jdbcType=VARCHAR}
+	</update>
+</mapper>

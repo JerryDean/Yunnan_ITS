@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.stee.emer.mapper.EmerIncidentMapper">
+	<resultMap type="Incident" id="incidentMap">
+		<result property="intervalStart" column="INTERVAL_START"/>
+		<result property="intervalEnd" column="INTERVAL_END"/>
+		<result property="administrativeOffice" column="ADMINISTRATIVE_OFFICE"/>
+		<result property="geographicInformation" column="GEOGRAPHIC_INFORMATION"/>
+		<result property="isSimulate" column="IS_SIMULATE"/>
+		<result property="congestionEnd" column="CONGESTION_END"/>
+		<result property="congestionStart" column="CONGESTION_START"/>
+		<result property="isCongestion" column="IS_CONGESTION"/>
+		<result property="deathNum" column="DEATH_NUM"/>
+		<result property="InjuredNum" column="INJURED_NUM"/>
+		<result property="vehicleNum" column="VEHICLE_NUM"/>
+		<result property="roadType" column="ROAD_TYPE"/>
+		<result property="executeStatus" column="EXECUTE_STATUS"/>
+		<result property="incidentName" column="INCIDENT_NAME"/>
+		<result property="spotFinalReport" column="SPOT_FINAL_REPORT"/>
+		<result property="centreFinalReport" column="CENTRE_FINAL_REPORT"/>
+		<result property="incidentNo" column="INCIDENT_NO" />
+		<result property="carModuleStr" column="CAR_MODULE"/>
+		<result property="accidentReason" column="ACCIDENT_REASON"/>
+		<result property="accidentForm" column="ACCIDENT_FORM"/>
+		<result property="trafficStop" column="TRAFFIC_STOP" jdbcType="CHAR"/>
+	</resultMap>
+	<insert id="addIncident" parameterType="Incident">
+		<!-- <selectKey keyProperty="id" resultType="String" order="BEFORE">
+			select sys_guid() as id from dual	
+		</selectKey> -->
+		INSERT INTO TR_ERS_INCIDENT(
+  			ID,
+  			TYPE,SUBTYPE,
+  			INCIDENTLEVEL,SOURCE,
+  			STARTTIME,SUBMITTIME,
+  			ENDTIME,ROAD,
+  			ADDRESS,POINT,
+  			X,Y,
+			ORIENTATION,EFFECTEDLANE,
+			INCIDENTDESC,TRAFFICJAM,
+			INJURIED,OTHER,
+			STATE,INCIDENT_NAME,EXECUTE_STATUS,
+			ROAD_TYPE,VEHICLE_NUM,INJURED_NUM,
+			DEATH_NUM,IS_CONGESTION,
+			CONGESTION_START,CONGESTION_END,
+			<if test="null != isSimulate">
+				IS_SIMULATE,
+			</if>
+			GEOGRAPHIC_INFORMATION,
+			ADMINISTRATIVE_OFFICE,
+			SECTION,
+			INTERVAL_START,
+			INTERVAL_END,
+			SPOT_FINAL_REPORT,
+			CENTRE_FINAL_REPORT,
+			INCIDENT_NO,
+			CAR_MODULE,
+			ACCIDENT_REASON,
+			ACCIDENT_FORM,
+			TRAFFIC_STOP
+		)VALUES(
+			#{id,jdbcType=VARCHAR},
+			#{type,jdbcType=VARCHAR},#{subtype,jdbcType=INTEGER},
+			#{incidentLevel,jdbcType=INTEGER},#{source,jdbcType=VARCHAR},
+			#{startTime,jdbcType=DATE},#{submitTime,jdbcType=DATE},
+			#{endTime,jdbcType=DATE},#{road,jdbcType=VARCHAR},
+			#{address,jdbcType=VARCHAR},#{point,jdbcType=VARCHAR},
+			#{x,jdbcType=DOUBLE},#{y,jdbcType=DOUBLE},
+			#{orientation,jdbcType=VARCHAR},#{effectedLane,jdbcType=VARCHAR},
+			#{incidentDesc,jdbcType=VARCHAR},#{trafficJam,jdbcType=VARCHAR},
+			#{injuried,jdbcType=VARCHAR},#{other,jdbcType=VARCHAR},
+			#{state,jdbcType=VARCHAR},#{incidentName,jdbcType=VARCHAR},
+			#{executeStatus,jdbcType=INTEGER},#{roadType,jdbcType=VARCHAR},
+			#{vehicleNum,jdbcType=INTEGER},#{injuredNum,jdbcType=INTEGER},
+			#{deathNum,jdbcType=INTEGER},#{isCongestion,jdbcType=VARCHAR},
+			#{congestionStart,jdbcType=DATE},#{congestionEnd,jdbcType=DATE},
+			<if test="null != isSimulate">
+				#{isSimulate,jdbcType=VARCHAR},
+			</if>
+			#{geographicInformation,jdbcType=VARCHAR},
+			#{administrativeOffice,jdbcType=VARCHAR},
+			#{section,jdbcType=VARCHAR},
+			#{intervalStart,jdbcType=VARCHAR},
+			#{intervalEnd,jdbcType=VARCHAR},
+			#{spotFinalReport,jdbcType=VARCHAR},
+			#{centreFinalReport,jdbcType=VARCHAR},
+			#{incidentNo,jdbcType=VARCHAR},
+			#{carModuleStr,jdbcType=VARCHAR},
+			#{accidentReason,jdbcType=VARCHAR},
+			#{accidentForm,jdbcType=VARCHAR},
+			#{trafficStop,jdbcType=INTEGER}
+		)
+	</insert>
+	
+	<update id="updateIncident" parameterType="Incident">
+		UPDATE TR_ERS_INCIDENT SET
+  			TYPE=#{type,jdbcType=VARCHAR},
+  			SUBTYPE=#{subtype,jdbcType=INTEGER},
+  			INCIDENTLEVEL=#{incidentLevel,jdbcType=INTEGER},
+  			SOURCE=#{source,jdbcType=VARCHAR},
+  			STARTTIME=#{startTime,jdbcType=DATE},
+  			SUBMITTIME=#{submitTime,jdbcType=DATE},
+  			ENDTIME=#{endTime,jdbcType=DATE},
+  			ROAD=#{road,jdbcType=VARCHAR},
+  			ADDRESS=#{address,jdbcType=VARCHAR},
+  			POINT=#{point,jdbcType=VARCHAR},
+  			X=#{x,jdbcType=DOUBLE},
+  			Y=#{y,jdbcType=DOUBLE},
+			ORIENTATION=#{orientation,jdbcType=VARCHAR},
+			EFFECTEDLANE=#{effectedLane,jdbcType=VARCHAR},
+			INCIDENTDESC=#{incidentDesc,jdbcType=VARCHAR},
+			TRAFFICJAM=#{trafficJam,jdbcType=VARCHAR},
+			INJURIED=#{injuried,jdbcType=VARCHAR},
+			OTHER=#{other,jdbcType=VARCHAR},
+			STATE=#{state,jdbcType=VARCHAR},
+			INCIDENT_NAME=#{incidentName,jdbcType=VARCHAR},
+			EXECUTE_STATUS=#{executeStatus,jdbcType=INTEGER},
+			ROAD_TYPE=#{roadType,jdbcType=VARCHAR},
+			VEHICLE_NUM=#{vehicleNum,jdbcType=INTEGER},
+			INJURED_NUM=#{injuredNum,jdbcType=INTEGER},
+			DEATH_NUM=#{deathNum,jdbcType=INTEGER},
+			IS_CONGESTION=#{isCongestion,jdbcType=VARCHAR},
+			CONGESTION_START=#{congestionStart,jdbcType=DATE},
+			CONGESTION_END=#{congestionEnd,jdbcType=DATE},
+			<if test="null != isSimulate">
+				IS_SIMULATE=#{isSimulate,jdbcType=VARCHAR},
+			</if>
+			GEOGRAPHIC_INFORMATION=#{geographicInformation,jdbcType=VARCHAR},
+			ADMINISTRATIVE_OFFICE=#{administrativeOffice,jdbcType=VARCHAR},
+			SECTION=#{section,jdbcType=VARCHAR},
+			INTERVAL_START=#{intervalStart,jdbcType=VARCHAR},
+			INTERVAL_END=#{intervalEnd,jdbcType=VARCHAR},
+			SPOT_FINAL_REPORT=#{spotFinalReport,jdbcType=VARCHAR},
+			CENTRE_FINAL_REPORT=#{centreFinalReport,jdbcType=VARCHAR},
+			INCIDENT_NO=#{incidentNo,jdbcType=VARCHAR},
+			CAR_MODULE=#{carModuleStr,jdbcType=VARCHAR},
+			ACCIDENT_REASON=#{accidentReason,jdbcType=VARCHAR},
+			ACCIDENT_FORM=#{accidentForm,jdbcType=VARCHAR},
+			TRAFFIC_STOP=#{trafficStop,jdbcType=INTEGER}
+			WHERE ID = #{id,jdbcType=VARCHAR}
+	</update>
+	
+	<delete id="deleteIncident" parameterType="String">
+		DELETE FROM TR_ERS_INCIDENT WHERE ID = #{id,jdbcType=VARCHAR}
+	</delete>
+	
+	<select id="findIncidentById" parameterType="String" resultMap="incidentMap">
+		SELECT * FROM TR_ERS_INCIDENT WHERE ID = #{id,jdbcType=VARCHAR}
+	</select>
+	<!-- 事件列表：展示 状态是  未确认 0，确认 1，处理中 2的事件数据 -->
+	<select id="getAllIncident" resultMap="incidentMap">
+		SELECT * FROM TR_ERS_INCIDENT WHERE STATE IN (0,1,2,3,4,5,7) ORDER BY STARTTIME DESC
+	</select>
+	<!--查询历史事件 只查给定时间范围的 状态为 结束 3的事件-->
+	<select id="findHistIncidentByTime" resultMap="incidentMap">
+		SELECT * FROM TR_ERS_INCIDENT
+	   	WHERE STARTTIME BETWEEN
+	    #{startTime,jdbcType=DATE} AND #{endTime,jdbcType=DATE}	 ORDER BY STARTTIME DESC
+	</select>
+	<select id="getAoList" resultType="AdOffice">
+		select * from tr_cm_enum where category = 'AdministrativeOffice'
+	</select>
+	<select id="getIncidentByAo" parameterType="String" resultMap="incidentMap">
+		SELECT * FROM TR_ERS_INCIDENT t WHERE STATE IN(0,1,2,3,4,5,7) AND ADMINISTRATIVE_OFFICE = #{orgId} ORDER BY STARTTIME DESC
+	</select>
+	<select id="getIncidentByQueryBean" resultMap="incidentMap">
+		select * from TR_ERS_INCIDENT
+		<where>
+			<if test="null != type">
+				and TYPE = #{type, jdbcType=VARCHAR}
+			</if>
+			<if test="null != section">
+				and SECTION = #{section, jdbcType=VARCHAR}
+			</if>
+			<if test="null != administrativeOffice">
+				and ADMINISTRATIVE_OFFICE = #{administrativeOffice, jdbcType=VARCHAR}
+			</if>
+			<if test="null != startTime">
+				and STARTTIME BETWEEN #{startTime,jdbcType=DATE} AND #{endTime,jdbcType=DATE}
+			</if>
+			ORDER BY STARTTIME DESC
+		</where>
+	</select>
+	
+	<insert id="saveUserReportInfo" parameterType="UserReport">
+		insert into TR_ERS_USER_REPORT (
+			REPORT_ID,
+			USER_ID,
+			CONTENT,
+			OCC_TIME,
+			OCC_PLACE,
+			EVENT_TYPE,
+			LATITUDE,
+			LONGITUDE) values (
+			#{reportId, jdbcType=VARCHAR},
+			#{userId, jdbcType=VARCHAR},
+			#{content, jdbcType=VARCHAR},
+			#{occTime, jdbcType=DATE},
+			#{occPlace, jdbcType=VARCHAR},
+			#{eventType, jdbcType=VARCHAR},
+			#{latitude, jdbcType=FLOAT},
+			#{longitude, jdbcType=FLOAT})
+	</insert>
+	
+	<insert id="addCmsEvent" parameterType="CmsEvent">
+		insert into TR_ERS_CMS_EVENT (
+			ID,
+			CALLER_NAME,
+			CALLER_IC_NO,
+			CALLER_GENDER_CODE,
+			CALLER_PHONE_NO,
+			CALLER_CONTACT_PHONE_NO,
+			CALLER_VEHICLE_PLATE_NO,
+			ROAD_NAME,
+			ROAD_STAKE,
+			LONGITUDE,
+			LATIDUDE,
+			DIRECTION,
+			LOCATION,
+			DESCRIPTION,
+			START_TIME,
+			END_TIME,
+			CONNECTION_ID,
+			RECORD_URL
+		) values (
+			#{id,jdbcType=VARCHAR},
+			#{callerName,jdbcType=VARCHAR},
+			#{callerICNo,jdbcType=VARCHAR},
+			#{callerGenderCode,jdbcType=VARCHAR},
+			#{callerPhoneNo,jdbcType=VARCHAR},
+			#{callerContactPhoneNo,jdbcType=VARCHAR},
+			#{callerVehiclePlateNo,jdbcType=VARCHAR},
+			#{roadName,jdbcType=VARCHAR},
+			#{roadStakeNo,jdbcType=VARCHAR},
+			#{locationLongitude,jdbcType=DOUBLE},
+			#{locationLatidude,jdbcType=DOUBLE},
+			#{roadDirection,jdbcType=VARCHAR},
+			#{location,jdbcType=VARCHAR},
+			#{eventDescription,jdbcType=VARCHAR},
+			<!-- to_timestamp(#{callStartTime},'yyyymmddhh24misszzz'),
+			to_timestamp(#{callEndTime},'yyyymmddhh24misszzz'), -->
+			#{callStartTime,jdbcType=VARCHAR},
+			#{callEndTime,jdbcType=VARCHAR},
+			#{connectionID,jdbcType=VARCHAR},
+			#{recordingUrl,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<!-- 文件导出相关 -->
+	<select id="findByIncidentNo" parameterType="String" resultMap="incidentMap">
+		select * from TR_ERS_INCIDENT t WHERE t.incident_no = #{incidentNo,jdbcType=VARCHAR}
+	</select>
+	<select id="findName" parameterType="String" resultType="String">
+		select t.name from TR_CM_ENUM t WHERE t.category = #{category,jdbcType=VARCHAR} AND t.value = #{value,jdbcType=VARCHAR}
+	</select>
+</mapper>

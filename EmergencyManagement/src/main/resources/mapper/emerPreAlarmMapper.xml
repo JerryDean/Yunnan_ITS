@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.stee.emer.mapper.EmerPreAlarmMapper">
+	<insert id="addPreAlarmInfo" parameterType="PreAlarmInfo">
+		INSERT INTO TR_ERS_PREALARM_INFO (ID,CONTENT,RELEASE_ORGANIZATIONS,RELEASE_TIME,REQUIRED_RESPONSE_TIME,FLAG,NAME,SENDER,TYPE,CONTACT
+		) VALUES (
+			#{id, jdbcType=VARCHAR},
+			#{content, jdbcType=VARCHAR},
+			#{organization, jdbcType=VARCHAR},
+			#{releaseTime, jdbcType=DATE},
+			#{responseTime, jdbcType=DATE},
+			#{flag, jdbcType=CHAR},
+			#{name, jdbcType=VARCHAR},
+			#{sender, jdbcType=VARCHAR},
+			#{type, jdbcType=VARCHAR},
+			#{contact, jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<resultMap type="PreAlarmInfo" id="InfoMap">
+		<result property="organization" column="RELEASE_ORGANIZATIONS" />
+		<result property="releaseTime" column="RELEASE_TIME" />
+		<result property="responseTime" column="REQUIRED_RESPONSE_TIME" />
+	</resultMap>
+	
+	<update id="updatePreAlarmInfo" parameterType="PreAlarmInfo">
+		update TR_ERS_PREALARM_INFO set CONTENT = #{content,jdbcType=VARCHAR},
+		RELEASE_ORGANIZATIONS = #{organization,jdbcType=VARCHAR},
+		RELEASE_TIME = #{releaseTime,jdbcType=DATE},
+		REQUIRED_RESPONSE_TIME = #{responseTime,jdbcType=DATE},
+		NAME = #{name,jdbcType=VARCHAR},
+		SENDER = #{sender,jdbcType=VARCHAR},
+		TYPE = #{type,jdbcType=VARCHAR},
+		FLAG = #{flag,jdbcType=INTEGER},
+		CONTACT = #{contact,jdbcType=VARCHAR} where ID = #{id, jdbcType=VARCHAR}
+	</update>
+	
+	
+	<select id="getAllPreAlarmInfo" resultMap="InfoMap">
+		SELECT * FROM TR_ERS_PREALARM_INFO where flag = 1 ORDER BY RELEASE_TIME DESC
+	</select>
+	
+	<resultMap type="NoticeORG" id="OrganizationMap">
+		<id property="organizationId" column="ORG_ID" />
+		<result property="preAlarmId" column="PREALARM_ID" />
+		<result property="noticeTime" column="NOTICE_TIME" />
+		<result property="responseTime" column="RESPONSE_TIME" />
+	</resultMap>
+	
+	<select id="getNoticeOrganizationByAlarmId" parameterType="String" resultMap="OrganizationMap">
+		select * from TR_ERS_PREALARM_NOTICE_ORG t WHERE t.prealarm_id = #{preAlarmId, jdbcType=VARCHAR} ORDER BY NOTICE_TIME DESC
+	</select>
+	
+	<resultMap type="PreAlarmAction" id="ActionMap">
+		<result property="preAlarmId" column="PREALARM_ID" />
+		<result property="organizationId" column="ORG_ID" />
+		<result property="startTime" column="START_TIME" />
+		<result property="endTime" column="END_TIME" />
+		<result property="actionId" column="ACTION_ID"></result>
+	</resultMap>
+	
+	<select id="getPreAlarmActionsByOrgId" parameterType="String" resultMap="ActionMap">
+		select * from TR_ERS_PREALARM_ACTION t WHERE t.org_id = #{organizationId, jdbcType=VARCHAR} and t.PREALARM_ID = #{id} ORDER BY START_TIME DESC
+	</select>
+	
+	<select id="findPreAlarmInfoById" parameterType="String" resultMap="InfoMap">
+		select * from TR_ERS_PREALARM_INFO t WHERE ID = #{id, jdbcType=VARCHAR}
+	</select>
+	
+	<insert id="addNoticeOrganization" parameterType="NoticeORG">
+		INSERT INTO tr_ers_prealarm_notice_org (prealarm_id, org_id, notice_time, response_time
+		) VALUES (
+			#{preAlarmId},
+			#{organizationId},
+			#{noticeTime,jdbcType=DATE},
+			#{responseTime,jdbcType=DATE}
+		)
+	</insert>
+	
+	<insert id="addPreAlarmAction" parameterType="PreAlarmAction">
+		<selectKey keyProperty="actionId" resultType="String" order="BEFORE">
+			select sys_guid() from dual
+		</selectKey>
+		INSERT INTO TR_ERS_PREALARM_ACTION (PREALARM_ID, ORG_ID, ACTION, START_TIME, END_TIME, STATE, ACTION_ID
+		) VALUES (
+			#{preAlarmId},
+			#{organizationId},
+			#{action},
+			#{startTime,jdbcType=DATE},
+			#{endTime,jdbcType=DATE},
+			#{state},
+			#{actionId}
+		)
+	</insert>
+	
+	<update id="updateNoticeOrganization" parameterType="NoticeORG">
+		UPDATE tr_ers_prealarm_notice_org SET PREALARM_ID = #{preAlarmId},
+		NOTICE_TIME = #{noticeTime,jdbcType=DATE},
+		RESPONSE_TIME = #{responseTime,jdbcType=DATE} where ORG_ID = #{organizationId}
+	</update>
+	
+	<update id="updatePreAlarmAction" parameterType="PreAlarmAction">
+		UPDATE tr_ers_prealarm_action SET ACTION = #{action,jdbcType=VARCHAR},
+		START_TIME = #{startTime,jdbcType=DATE},
+		END_TIME = #{endTime,jdbcType=DATE},
+		STATE = #{state,jdbcType=INTEGER} where ACTION_ID = #{actionId,jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 查询给定时间范围内的历史预警信息 -->
+	<select id="getHisPreAlarmInfoByTime" resultMap="InfoMap">
+		select * from TR_ERS_PREALARM_INFO t WHERE t.release_time BETWEEN #{startTime,jdbcType=DATE} and #{endTime,jdbcType=DATE} ORDER BY RELEASE_TIME DESC
+	</select>
+	
+	<delete id="deletePreAlarmActionById" parameterType="String">
+		delete from TR_ERS_PREALARM_ACTION where ACTION_ID = #{id,jdbcType=VARCHAR}
+	</delete>
+</mapper>

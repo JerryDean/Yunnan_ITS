@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.stee.emer.mapper.EmerInciHandleMapper">
+
+	<resultMap type="Handle" id="handleMap">
+		<result property="createTime" column="CREATE_TIME"/>
+		<result property="createBy" column="CREATE_BY"/>
+		<result property="updateTime" column="UPDATE_TIME"/>
+		<result property="updateBy" column="UPDATE_BY"/>
+	</resultMap>
+
+	<insert id="addInciHandle" parameterType="Handle">
+		<selectKey keyProperty="id" resultType="String" order="BEFORE">
+			select sys_guid() as id from dual
+		</selectKey>
+		INSERT INTO TR_ERS_INCI_HANDLE(
+			ID, 
+			INCIDENTID, 
+			CONTACT, 
+			PHONE, 
+			DESCRIPTION,
+			CREATE_TIME,
+			CREATE_BY,
+			UPDATE_TIME,
+			UPDATE_BY,
+			STATUS
+		)VALUES(
+			#{id,jdbcType=VARCHAR},
+			#{incidentId,jdbcType=VARCHAR}, 
+			#{contact,jdbcType=VARCHAR}, 
+			#{phone,jdbcType=VARCHAR}, 
+			#{description,jdbcType=VARCHAR},
+			#{createTime,jdbcType=DATE},
+			#{createBy,jdbcType=VARCHAR},
+			#{updateTime,jdbcType=DATE},
+			#{updateBy,jdbcType=VARCHAR},
+			#{status,jdbcType=INTEGER}
+		)
+	</insert>
+	
+	<delete id="deleteInciHandle" parameterType="String">
+		DELETE FROM TR_ERS_INCI_HANDLE WHERE ID = #{id,jdbcType=VARCHAR}
+	</delete>
+	
+	<select id="getAllInciHandleByIncidentId" parameterType="String" resultMap="handleMap">
+		SELECT * FROM TR_ERS_INCI_HANDLE WHERE INCIDENTID = #{incidentId,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getAllInciHandle" resultMap="handleMap">
+		SELECT * FROM TR_ERS_INCI_HANDLE
+	</select>
+	
+	<select id="findInciHandleById" parameterType="String" resultMap="handleMap">
+		SELECT * FROM TR_ERS_INCI_HANDLE WHERE ID = #{id,jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateInciHandle" parameterType="Handle">
+		UPDATE TR_ERS_INCI_HANDLE SET 
+			INCIDENTID = #{incidentId,jdbcType=VARCHAR}, 
+			CONTACT = #{contact,jdbcType=VARCHAR}, 
+			PHONE = #{phone,jdbcType=VARCHAR}, 
+			DESCRIPTION = #{description,jdbcType=VARCHAR},
+			CREATE_TIME = #{createTime,jdbcType=DATE},
+			CREATE_BY = #{createBy,jdbcType=VARCHAR},
+			UPDATE_TIME = #{updateTime,jdbcType=DATE},
+			UPDATE_BY = #{updateBy,jdbcType=VARCHAR},
+			STATUS = #{status,jdbcType=INTEGER}
+		WHERE ID = #{id,jdbcType=VARCHAR}
+	</update>
+</mapper>

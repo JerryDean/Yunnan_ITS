@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	                    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+	                    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+	                    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+		
+	 <!-- activemq 链接工厂 failover重连机制-->
+	 <!-- 
+	 	Listener端的borkerURL使用了failover传输方式：
+		failover:(tcp://localhost:61616)?initialReconnectDelay=100&amp;maxReconnectAttempts=5
+		客户端使用普通传输方式：tcp://localhost:61616
+		failover transport是一种重新连接机制，用于建立可靠的传输。此处配置的是一旦ActiveMQ broker中断，
+		Listener端将每隔100ms自动尝试连接，直至成功连接或重试5次连接失败为止。failover还支持多个borker同时提供服务，
+		实现负载均衡的同时可增加系统容错性，格式： failover:(uri1,...,uriN)?transportOptions
+	  -->
+	 <bean id="outterActiveMQConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory"
+	 	p:brokerURL="failover:(${ERS.activemq.outternet},${ActiveMQ.netaddress},tcp://127.0.0.1:61616)?initialReconnectDelay=500">
+	 </bean>
+	 <bean id="activeMQConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory"
+	 	p:brokerURL="failover:(${ActiveMQ.netaddress},tcp://127.0.0.1:61616)?initialReconnectDelay=500">
+	 </bean>
+	 
+	 <!-- 自定义JMS链接工厂-->
+	 <bean id="jmsConnectionFactory" class="com.stee.dsms.jms.JMSConnectionFactory" init-method="init">
+	     <property name="connectionFactory" ref="activeMQConnectionFactory" />
+	 </bean> 
+	 <bean id="outterJmsConnectionFactory" class="com.stee.dsms.jms.JMSConnectionFactory" init-method="init">
+	     <property name="connectionFactory" ref="outterActiveMQConnectionFactory" />
+	 </bean> 
+	 
+	 <!-- 主题消息发送器 -->
+	 <bean id="topicSender" class="com.stee.dsms.jms.impl.TopicSender">
+	     <property name="jmsConnectionFactory" ref="jmsConnectionFactory" />
+	 </bean>
+	 
+	 <bean id="outterTopicSender" class="com.stee.emer.util.JMSSender">
+	 	<property name="connectionFactory" ref="outterActiveMQConnectionFactory"></property>
+	 </bean>
+	 
+	 <bean id="jmsQueueListener" class="com.stee.emer.quartz.DiscloseListenner"></bean>
+	 <!-- 队列消息接收器 -->
+	 <bean id="queueReceiver" class="com.stee.dsms.jms.impl.QueueReceiver">
+	     <constructor-arg name="destName" value="TRAFFIC_USER_REPORT" />
+		 <constructor-arg name="listener" ref="jmsQueueListener"/>
+		 <constructor-arg name="jmsConnectionFactory" ref="outterJmsConnectionFactory" />
+	 </bean>
+	 
+	 <!-- 主题消息接收器 -->
+	 <!-- <bean id="topicReceiver" class="com.stee.dsms.jms.impl.TopicReceiver">
+	 	 <property name="jmsConnectionFactory" ref="jmsConnectionFactory" />
+	 </bean> -->
+	 
+	 <!-- 自定义JMS链接工厂
+	 <bean id="jmsConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory"
+		p:targetConnectionFactory-ref="activeMQConnectionFactory"
+		p:sessionCacheSize="50" />-->
+	 
+	 <!-- 队列消息发送器 -->
+	 <!-- <bean id="queueSender" class="com.stee.dsms.jms.impl.QueueSender">
+	     <property name="jmsConnectionFactory" ref="outterJmsConnectionFactory" />
+	 </bean> -->
+	 
+	 <!-- <bean id="queueSender" class="com.stee.emer.util.MyQueueSender">
+	 	<property name="queueConnectionFactory" ref="outterActiveMQConnectionFactory"></property>
+	 </bean> -->
+</beans>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.stee.emer.mapper.EmerLedMapper">
+	<resultMap id="infoMap" type="LedInfo">
+		<result property="deviceId" column="DEVICE_ID"></result>
+		<result property="instutationId" column="INSTUTATION_ID"></result>
+		<result property="incidentId" column="INCIDENT_ID"></result>
+		<result property="flag" column="SWITCH"></result>
+	</resultMap>
+	
+	<update id="updateLedInfo">
+		update TR_ERS_LED set INCIDENT_ID = #{incidentId,jdbcType=VARCHAR},SWITCH = #{flag,jdbcType=INTEGER} where INSTUTATION_ID = #{instutationId,jdbcType=VARCHAR}
+	</update>
+	
+	<select id="getLogsByIncidentId" parameterType="String" resultType="IncidentLog">
+		select t.CONTENT,t.ENDDATE,t.OBJECTID from TR_OPHUB_LOG t where t.OBJECTID = #{incidentId,jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateSwitch">
+		update TR_ERS_LED set SWITCH = #{flag,jdbcType=INTEGER},INCIDENT_ID = #{incidentId,jdbcType=VARCHAR} where INSTUTATION_ID = #{instutationId,jdbcType=VARCHAR}
+	</update>
+	
+	<select id="findById" parameterType="String" resultMap="infoMap">
+		select * from TR_ERS_LED where INCIDENT_ID = #{id,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getByInstutationId" parameterType="String" resultMap="infoMap">
+		select * from tr_ers_led where INSTUTATION_ID = #{instutationId,jdbcType=VARCHAR}
+	</select>
+</mapper>

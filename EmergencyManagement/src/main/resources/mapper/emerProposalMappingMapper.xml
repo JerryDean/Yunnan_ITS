@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.stee.emer.mapper.EmerProposalMappingMapper">
+	<!--
+	<insert id="addProposalRelation" parameterType="ProposalRelation">
+		<selectKey keyProperty="id" resultType="String" order="BEFORE">
+			SELECT SYS_GUID() AS id FROM DUAL 
+		</selectKey>
+		INSERT INTO TR_ERS_PROPOSALMAPPING(
+			ID,
+			PROPOSAL_ID,
+			CONTENT_ID,
+			STATUS,
+			FLAG
+		) VALUES (
+			#{id,jdbcType=VARCHAR},
+			#{proposal_id,jdbcType=VARCHAR},
+			#{content_id,jdbcType=VARCHAR},
+			#{status,jdbcType=INTEGER},
+			#{flag,jdbcType=VARCHAR}
+		)
+	</insert>
+	-->
+</mapper>

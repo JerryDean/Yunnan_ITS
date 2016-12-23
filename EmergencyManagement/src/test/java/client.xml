@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="cxf wsdl2javaClient" default="cxfWSDLToJavaClient" basedir=".">   
+  <property name="cxf.home" location ="E:\\apache-cxf-2.7.12"/>
+									   
+   <path id="cxf.classpath">
+	   <fileset dir="${cxf.home}/lib">
+	   		<include name="*.jar"/>
+	   </fileset>
+   </path>
+     
+   <target name="cxfWSDLToJavaClient">
+	   <java classname="org.apache.cxf.tools.wsdlto.WSDLToJava" fork="true"> 
+		   <arg value="-p"/>
+		   <arg value="com.stee.test.client.CCS_ERX_MgtClient"/>
+		   <arg value="-d"/>
+		   <arg value="f:/ss"/>
+		   <arg value="-client"/>
+		   <arg value="http://localhost:7001/CCS_ERS_Mgt/EmergencySys?wsdl"/>
+		   <classpath>
+		   <path refid="cxf.classpath"/>
+		   </classpath>
+	   </java>
+   </target>
+</project>

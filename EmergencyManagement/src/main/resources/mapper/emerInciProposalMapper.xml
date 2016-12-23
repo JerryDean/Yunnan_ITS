@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.stee.emer.mapper.EmerInciProposalMapper">
+	<resultMap type="Inci_Proposal" id="ProposalMap">
+		<result property="createTime" column="CREATE_TIME"/>
+		<result property="createBy" column="CREATE_BY"/>
+		<result property="updateTime" column="UPDATE_TIME"/>
+		<result property="updateBy" column="UPDATE_BY"/>
+		<result property="implementStatus" column="IMPLEMENT_STATUS" />
+	</resultMap>
+
+	<insert id="addInciProposal" parameterType="Inci_Proposal">
+	<selectKey keyProperty="id" resultType="String" order="BEFORE">
+			select sys_guid() as id from dual	
+	</selectKey>
+		INSERT INTO TR_ERS_INCI_PROPOSAL(
+			ID, 
+			INCIDENTID,
+			NAME,
+			DESCRIPTION,
+			TYPE,
+			SUBTYPE,
+			INCIDENTLEVEL,
+			CONTENT,
+			PHONE,
+			CONTACT,
+			CREATE_TIME,
+			CREATE_BY,
+			UPDATE_TIME,
+			UPDATE_BY,
+			STATUS,
+			IMPLEMENT_STATUS
+		)VALUES(
+			#{id,jdbcType=VARCHAR}, 
+			#{incidentId,jdbcType=VARCHAR},
+			#{name,jdbcType=VARCHAR},
+			#{description,jdbcType=VARCHAR},
+			#{type,jdbcType=VARCHAR},
+			#{subType,jdbcType=VARCHAR},
+			#{incidentLevel,jdbcType=VARCHAR},
+			#{content,jdbcType=VARCHAR},
+			#{phone,jdbcType=VARCHAR},
+			#{contact,jdbcType=VARCHAR},
+			#{createTime,jdbcType=DATE},
+			#{createBy,jdbcType=VARCHAR},
+			#{updateTime,jdbcType=DATE},
+			#{updateBy,jdbcType=VARCHAR},
+			#{status,jdbcType=INTEGER},
+			#{implementStatus,jdbcType=INTEGER}
+		)
+	</insert>
+	
+	<delete id="deleteInciProposal" parameterType="String">
+		DELETE FROM TR_ERS_INCI_PROPOSAL WHERE ID = #{id,jdbcType=VARCHAR}
+	</delete>
+	
+	<select id="getAllInciProposalByIncidentId" parameterType="String" resultMap="ProposalMap">
+		SELECT * FROM TR_ERS_INCI_PROPOSAL WHERE INCIDENTID = #{incidentId,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getAllInciProposal" resultMap="ProposalMap">
+		SELECT * FROM TR_ERS_INCI_PROPOSAL
+	</select>
+	
+	<select id="findInciProposalById" parameterType="String" resultMap="ProposalMap">
+		SELECT * FROM TR_ERS_INCI_PROPOSAL WHERE ID = #{id,jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateInciProposal" parameterType="Inci_Proposal">
+		UPDATE TR_ERS_INCI_PROPOSAL SET
+			INCIDENTID = #{incidentId,jdbcType=VARCHAR},
+			NAME = #{name,jdbcType=VARCHAR},
+			DESCRIPTION = #{description,jdbcType=VARCHAR},
+			TYPE = #{type,jdbcType=VARCHAR},
+			SUBTYPE = #{subType,jdbcType=VARCHAR},
+			INCIDENTLEVEL = #{incidentLevel,jdbcType=VARCHAR},
+			CONTENT = #{content,jdbcType=VARCHAR},
+			PHONE = #{phone,jdbcType=VARCHAR},
+			CONTACT = #{contact,jdbcType=VARCHAR},
+			CREATE_TIME = #{createTime,jdbcType=DATE},
+			CREATE_BY = #{createBy,jdbcType=VARCHAR},
+			UPDATE_TIME = #{updateTime,jdbcType=DATE},
+			UPDATE_BY = #{updateBy,jdbcType=VARCHAR},
+			STATUS = #{status,jdbcType=INTEGER},
+			IMPLEMENT_STATUS = #{implementStatus,jdbcType=INTEGER}
+		WHERE ID = #{id,jdbcType=VARCHAR}
+	</update>
+	
+	<select id="getAllProposalByTAndL" parameterType="String" resultType="Proposal">
+		SELECT * FROM TR_ERS_PROPOSAL 
+		WHERE 
+			INCIDENTLEVEL = #{incidentLevel,jdbcType=VARCHAR} 
+			AND
+			SUBTYPE = #{incidentSubType,jdbcType=VARCHAR} 
+	</select>
+</mapper>

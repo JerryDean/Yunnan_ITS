@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.stee.emer.mapper.EmerInciResourceMapper">
+
+	<resultMap type="Inci_Resource" id="ResourceMap">
+		<result property="createTime" column="CREATE_TIME"/>
+		<result property="createBy" column="CREATE_BY"/>
+		<result property="updateBy" column="UPDATE_BY"/>
+	</resultMap>
+
+	<insert id="addInciResource" parameterType="Inci_Resource">
+	<selectKey keyProperty="id" resultType="String" order="BEFORE">
+			select sys_guid() as id from dual	
+	</selectKey>
+		INSERT INTO TR_ERS_INCI_RESOURCE(
+			ID,
+   			INCIDENTID,
+   			NAME,
+   			TYPE,
+   			STORAGEID,
+   			SPECIFICATION,
+   			COUNT,
+   			UNIT,
+   			UPDATETIME,
+   			REMARK,
+   			CONTACT,
+   			PHONE,
+   			CREATE_TIME,
+			CREATE_BY,
+			UPDATE_BY,
+			STATUS,
+			PRICE
+   		)VALUES(
+   			#{id,jdbcType=VARCHAR},
+   			#{incidentId,jdbcType=VARCHAR},
+   			#{name,jdbcType=VARCHAR},
+   			#{type,jdbcType=VARCHAR},
+   			#{storageId,jdbcType=VARCHAR},
+   			#{specification,jdbcType=VARCHAR},
+   			#{count,jdbcType=INTEGER},
+   			#{unit,jdbcType=VARCHAR},
+   			#{updateTime,jdbcType=DATE},
+   			#{remark,jdbcType=VARCHAR},
+   			#{contact,jdbcType=VARCHAR},
+   			#{phone,jdbcType=VARCHAR},
+   			#{createTime,jdbcType=DATE},
+			#{createBy,jdbcType=VARCHAR},
+			#{updateBy,jdbcType=VARCHAR},
+			#{status,jdbcType=INTEGER},
+			#{price,jdbcType=DOUBLE}
+   		)
+	</insert>
+	
+	<delete id="deleteInciResource" parameterType="String">
+		DELETE FROM TR_ERS_INCI_RESOURCE WHERE ID = #{id,jdbcType=VARCHAR}
+	</delete>
+	
+	<select id="findInciResourceById" parameterType="String" resultMap="ResourceMap">
+		SELECT * FROM TR_ERS_INCI_RESOURCE WHERE ID = #{id,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getAllByIncidentId" parameterType="String" resultMap="ResourceMap">
+		SELECT * FROM TR_ERS_INCI_RESOURCE WHERE INCIDENTID = #{incidentId,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getAllInciResource" resultMap="ResourceMap">
+		SELECT * FROM TR_ERS_INCI_RESOURCE
+	</select>
+	
+	<update id="updateInciResource" parameterType="Inci_Resource">
+		UPDATE TR_ERS_INCI_RESOURCE SET 
+			INCIDENTID = #{incidentId,jdbcType=VARCHAR}, 
+   			NAME = #{name,jdbcType=VARCHAR},
+   			TYPE = #{type,jdbcType=VARCHAR},
+   			STORAGEID = #{storageId,jdbcType=VARCHAR},
+   			SPECIFICATION = #{specification,jdbcType=VARCHAR},
+   			COUNT = #{count,jdbcType=INTEGER},
+   			UNIT = #{unit,jdbcType=VARCHAR},
+   			UPDATETIME = #{updateTime,jdbcType=DATE},
+   			REMARK = #{remark,jdbcType=VARCHAR},
+   			CONTACT = #{contact,jdbcType=VARCHAR},
+   			PHONE = #{phone,jdbcType=VARCHAR},
+   			CREATE_TIME = #{createTime,jdbcType=DATE},
+			CREATE_BY = #{createBy,jdbcType=VARCHAR},
+			UPDATE_BY = #{updateBy,jdbcType=VARCHAR},
+			STATUS = #{status,jdbcType=INTEGER},
+			PRICE = #{price,jdbcType=DOUBLE}
+   		WHERE ID = #{id,jdbcType=VARCHAR}
+	</update>
+</mapper>
