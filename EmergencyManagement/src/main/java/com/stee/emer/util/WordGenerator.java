@@ -1,23 +1,13 @@
 package com.stee.emer.util;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.codec.binary.Base64;
-
 import com.google.common.collect.Maps;
-
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import org.apache.commons.codec.binary.Base64;
+
+import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class WordGenerator {
 	private static Configuration configuration = null;
@@ -41,8 +31,8 @@ public class WordGenerator {
 	}
 
 	public static File createDoc(Map<?, ?> dataMap, String type) {
-		String name = "temp" + (int) (Math.random() * 100000) + ".doc";
-		// String name = "c:/temp.doc";
+//		String name = "temp" + (int) (Math.random() * 100000) + ".doc";
+		 String name = "c:/temp.doc";
 		File f = new File(name);
 		Template t = allTemplates.get(type);
 		try {
@@ -146,8 +136,7 @@ public class WordGenerator {
 		map.put("resubmit", "123456");
 		map.put("summarize", "123456");
 		map.put("summarizeOfCentre", "123456");
-		File file = WordGenerator.createDoc(map, "resume");
-		file.delete();
+		WordGenerator.createDoc(map, "model");
 	}
 
 }
