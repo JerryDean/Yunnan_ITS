@@ -1,14 +1,16 @@
 package com.stee.emer.service.impl;
 
-import com.google.common.collect.Maps;
-import com.stee.dsms.model.Result;
-import com.stee.emer.entity.*;
-import com.stee.emer.mapper.EmerInciHandleMapper;
-import com.stee.emer.mapper.EmerInciProposalMapper;
-import com.stee.emer.mapper.EmerInciResourceMapper;
-import com.stee.emer.mapper.EmerIncidentMapper;
-import com.stee.emer.service.IEmerIncident;
-import com.stee.emer.util.*;
+import java.io.File;
+import java.io.StringWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,11 +20,28 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.File;
-import java.io.StringWriter;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import com.google.common.collect.Maps;
+import com.stee.dsms.model.Result;
+import com.stee.emer.entity.AdministratorOffice;
+import com.stee.emer.entity.Inci_Handle;
+import com.stee.emer.entity.Inci_Proposal;
+import com.stee.emer.entity.Inci_Resource;
+import com.stee.emer.entity.Incident;
+import com.stee.emer.entity.PTISJsonTemplate;
+import com.stee.emer.entity.QueryBean;
+import com.stee.emer.entity.ReportInfo;
+import com.stee.emer.entity.TrafficEvent;
+import com.stee.emer.mapper.EmerInciHandleMapper;
+import com.stee.emer.mapper.EmerInciProposalMapper;
+import com.stee.emer.mapper.EmerInciResourceMapper;
+import com.stee.emer.mapper.EmerIncidentMapper;
+import com.stee.emer.service.IEmerIncident;
+import com.stee.emer.util.GUIDUtils;
+import com.stee.emer.util.JMSSender;
+import com.stee.emer.util.MessageSerializeUtils;
+import com.stee.emer.util.ParameterUtils;
+import com.stee.emer.util.Utils;
+import com.stee.emer.util.WordGenerator;
 
 /**
  * Copyright @ 2007, ST Electronics Info-comm Systems PTE. LTD All rights
@@ -630,26 +649,41 @@ public class EmerIncidentImpl implements IEmerIncident {
 			Integer subtype = incident.getSubtype();
 			if (null != type2 && !type2.equals("")) {
 				String typeName = emerIncidentMapper.findName("IncidentType", type2);
-				if (null != subtype) {
+				if (null != subtype && null != typeName && !typeName.equals("")) {
 					String subValue = emerIncidentMapper.findName(typeName, String.valueOf(subtype));
-					map.put("subtype", subValue);
+					if (null != subValue && !subValue.equals("")) {
+						map.put("subtype", subValue);
+					} else {
+						map.put("subtype", "");
+					}
+					map.put("type", typeName);
 				} else {
 					map.put("subtype", "");
+					map.put("type", "");
 				}
-				map.put("type", typeName);
 			} else {
+				map.put("subtype", "");
 				map.put("type", "");
 			}
 			Integer incidentLevel = incident.getIncidentLevel();
 			if (null != incidentLevel) {
 				String level = emerIncidentMapper.findName("IncidentLevel", String.valueOf(incidentLevel));
-				map.put("level", level);
+				if (null != level && !level.equals("")) {
+					map.put("level", level);
+				} else {
+					map.put("level", "");
+				}
 			} else {
 				map.put("level", "");
 			}
 			String administrativeOffice = incident.getAdministrativeOffice();
 			if (null != administrativeOffice && !administrativeOffice.equals("")) {
-				map.put("office", administrativeOffice);
+				String officeName = emerIncidentMapper.findName("AdministrativeOffice", administrativeOffice);
+				if (null != officeName && !officeName.equals("")) {
+					map.put("office", officeName);
+				} else {
+					map.put("office", "");
+				}
 			} else {
 				map.put("office", "");
 			}
@@ -704,6 +738,8 @@ public class EmerIncidentImpl implements IEmerIncident {
 				} else {
 					map.put("direction", "");
 				}
+			} else {
+				map.put("direction", "");
 			}
 			String point = incident.getPoint();
 			if (null != point && !point.equals("")) {
@@ -713,23 +749,51 @@ public class EmerIncidentImpl implements IEmerIncident {
 			}
 			String intervalStart = incident.getIntervalStart();
 			if (null != intervalStart && !intervalStart.equals("")) {
-				String road2 = incident.getRoad();
+				String road2 = incident.getSection();
 				if (null != road2 && !road2.equals("")) {
-					String startInterval = emerIncidentMapper.findName(road2, intervalStart);
-					map.put("start", startInterval);
+					String startInterval = emerIncidentMapper.findByDesc("收费站", intervalStart);
+					// String startInterval = emerIncidentMapper.findName(road2,
+					// intervalStart);
+					if (null != startInterval && !startInterval.equals("")) {
+						map.put("start", startInterval);
+					} else {
+						// String findName = emerIncidentMapper.findName(null,
+						// intervalStart);
+						// if (null != findName && !findName.equals("")) {
+						// map.put("start", findName);
+						// } else {
+						// map.put("start", "");
+						// }
+						map.put("start", "");
+					}
 				} else {
 					map.put("start", "");
 				}
+			} else {
+				map.put("start", "");
 			}
 			String intervalEnd = incident.getIntervalEnd();
 			if (null != intervalEnd && !intervalEnd.equals("")) {
-				String road2 = incident.getRoad();
+				String road2 = incident.getSection();
 				if (null != road2 && !road2.equals("")) {
-					String endInterval = emerIncidentMapper.findName(road2, intervalEnd);
-					map.put("end", endInterval);
+					String endInterval = emerIncidentMapper.findByDesc("收费站", intervalEnd);
+					if (null != endInterval && !endInterval.equals("")) {
+						map.put("end", endInterval);
+					} else {
+						// String findName = emerIncidentMapper.findName(null,
+						// intervalEnd);
+						// if (null != findName && !findName.equals("")) {
+						// map.put("end", findName);
+						// } else {
+						// map.put("end", "");
+						// }
+						map.put("end", "");
+					}
 				} else {
 					map.put("end", "");
 				}
+			} else {
+				map.put("end", "");
 			}
 			String section = incident.getSection();
 			if (null != section && !section.equals("")) {
@@ -739,6 +803,8 @@ public class EmerIncidentImpl implements IEmerIncident {
 				} else {
 					map.put("section", "");
 				}
+			} else {
+				map.put("section", "");
 			}
 			String effectedLane = incident.getEffectedLane();
 			if (null != effectedLane && !effectedLane.equals("")) {
@@ -766,7 +832,10 @@ public class EmerIncidentImpl implements IEmerIncident {
 					Inci_Proposal inci_Proposal = allInciProposalByIncidentId.get(i);
 					String content = inci_Proposal.getContent();
 					if (null != content && !content.equals("")) {
-						stringBuilder.append((i + 1) + "、" + content + "/r");
+						stringBuilder.append((i + 1) + "、" + content);
+						stringBuilder.append(" </w:t></w:r></w:p><w:p><w:pPr></w:pPr>");
+						stringBuilder.append("<w:r><w:rPr>");
+						stringBuilder.append(" </w:rPr><w:t>  ");
 					}
 				}
 				if (stringBuilder.length() != 0) {
@@ -783,10 +852,12 @@ public class EmerIncidentImpl implements IEmerIncident {
 				for (int i = 0; i < allByIncidentId.size(); i++) {
 					try {
 						Inci_Resource inci_Resource = allByIncidentId.get(i);
-						resourceBuilder.append((i + 1) + "、" + inci_Resource.getName() + ",数量："
-								+ inci_Resource.getCount() + inci_Resource.getContact() == null ? ""
-										: ",联系人：" + inci_Resource.getContact() + inci_Resource.getPhone() == null ? ""
-												: ",电话：" + inci_Resource.getPhone() + "/r");
+						resourceBuilder
+								.append((i + 1) + "、" + inci_Resource.getName() + "    数量：" + inci_Resource.getCount());
+						// 换行三个为一个整体
+						resourceBuilder.append(" </w:t></w:r></w:p><w:p><w:pPr></w:pPr>");
+						resourceBuilder.append("<w:r><w:rPr>");
+						resourceBuilder.append(" </w:rPr><w:t>  ");
 					} catch (Exception e) {
 					}
 				}
@@ -804,7 +875,10 @@ public class EmerIncidentImpl implements IEmerIncident {
 				for (int i = 0; i < allInciHandleByIncidentId.size(); i++) {
 					Inci_Handle inci_Handle = allInciHandleByIncidentId.get(i);
 					if (null != inci_Handle.getDescription() && !inci_Handle.getDescription().equals("")) {
-						handleBuilder.append((i + 1) + "、" + inci_Handle.getDescription() + "/r");
+						handleBuilder.append((i + 1) + "、" + inci_Handle.getDescription());
+						handleBuilder.append(" </w:t></w:r></w:p><w:p><w:pPr></w:pPr>");
+						handleBuilder.append("<w:r><w:rPr>");
+						handleBuilder.append(" </w:rPr><w:t>  ");
 					}
 				}
 				if (handleBuilder.length() != 0) {
@@ -827,7 +901,7 @@ public class EmerIncidentImpl implements IEmerIncident {
 			} else {
 				map.put("summarizeOfCentre", "");
 			}
-			File file = WordGenerator.createDoc(map, "model");
+			File file = WordGenerator.createDoc(map, "model", incidentNo);
 			String encode = WordGenerator.encode(WordGenerator.getBytes(file));
 			file.delete();
 			if (null != type && type.equals("word")) {

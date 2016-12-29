@@ -252,6 +252,9 @@
 		select * from TR_ERS_INCIDENT t WHERE t.incident_no = #{incidentNo,jdbcType=VARCHAR}
 	</select>
 	<select id="findName" parameterType="String" resultType="String">
-		select t.name from TR_CM_ENUM t WHERE t.category = #{category,jdbcType=VARCHAR} AND t.value = #{value,jdbcType=VARCHAR}
+		select t.name from TR_CM_ENUM t where t.category = #{category,jdbcType=VARCHAR} AND t.value = #{value,jdbcType=VARCHAR}
+	</select>
+	<select id="findByDesc" parameterType="String" resultType="String">
+		select t.name from TR_CM_ENUM t where t.DESCRIPTION = #{descr,jdbcType=VARCHAR} AND t.value = #{value,jdbcType=VARCHAR}
 	</select>
 </mapper>

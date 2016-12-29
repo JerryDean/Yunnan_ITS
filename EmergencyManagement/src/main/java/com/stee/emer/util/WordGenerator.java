@@ -1,13 +1,21 @@
 package com.stee.emer.util;
 
-import com.google.common.collect.Maps;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import org.apache.commons.codec.binary.Base64;
-
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.commons.codec.binary.Base64;
+
+import freemarker.template.Configuration;
+import freemarker.template.Template;
 
 public class WordGenerator {
 	private static Configuration configuration = null;
@@ -30,15 +38,16 @@ public class WordGenerator {
 		throw new AssertionError();
 	}
 
-	public static File createDoc(Map<?, ?> dataMap, String type) {
-//		String name = "temp" + (int) (Math.random() * 100000) + ".doc";
-		 String name = "c:/temp.doc";
+	public static File createDoc(Map<?, ?> dataMap, String type, String fileName) {
+		// String name = "temp" + (int) (Math.random() * 100000) + ".doc";
+		String name = fileName + ".doc";
 		File f = new File(name);
 		Template t = allTemplates.get(type);
 		try {
 			// 这个地方不能使用FileWriter因为需要指定编码类型否则生成的Word文档会因为有无法识别的编码而无法打开
 			Writer w = new OutputStreamWriter(new FileOutputStream(f), "utf-8");
 			t.process(dataMap, w);
+			w.flush();
 			w.close();
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -107,36 +116,6 @@ public class WordGenerator {
 				}
 			}
 		}
-	}
-
-	public static void main(String[] args) {
-		Map<String, String> map = Maps.newHashMap();
-		map.put("code", "123456");
-		map.put("type", "123456");
-		map.put("level", "123456");
-		map.put("subtype", "123456");
-		map.put("office", "123456");
-		map.put("road", "123456");
-		map.put("occur", "123456");
-		map.put("longitude", "123456");
-		map.put("report", "123456");
-		map.put("latitude", "123456");
-		map.put("finish", "123456");
-		map.put("location", "123456");
-		map.put("direction", "123456");
-		map.put("mileage", "123456");
-		map.put("start", "123456");
-		map.put("end", "123456");
-		map.put("section", "123456");
-		map.put("lane", "123456");
-		map.put("detail", "123456");
-		map.put("other", "123456");
-		map.put("approach", "123456");
-		map.put("resource", "123456");
-		map.put("resubmit", "123456");
-		map.put("summarize", "123456");
-		map.put("summarizeOfCentre", "123456");
-		WordGenerator.createDoc(map, "model");
 	}
 
 }

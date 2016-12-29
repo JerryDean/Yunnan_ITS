@@ -71,4 +71,6 @@ public interface EmerIncidentMapper {
 
 	public String findName(@Param("category") String category, @Param("value") String value);
 
+	public String findByDesc(@Param("descr") String string, @Param("value") String intervalStart);
+
 }
