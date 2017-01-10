@@ -1,6 +1,7 @@
 package com.stee.emer.service.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.common.collect.Maps;
+import com.itextpdf.text.DocumentException;
 import com.stee.dsms.model.Result;
 import com.stee.emer.entity.AdministratorOffice;
 import com.stee.emer.entity.Inci_Handle;
@@ -40,6 +42,7 @@ import com.stee.emer.util.GUIDUtils;
 import com.stee.emer.util.JMSSender;
 import com.stee.emer.util.MessageSerializeUtils;
 import com.stee.emer.util.ParameterUtils;
+import com.stee.emer.util.PdfGenerator;
 import com.stee.emer.util.Utils;
 import com.stee.emer.util.WordGenerator;
 
@@ -689,6 +692,14 @@ public class EmerIncidentImpl implements IEmerIncident {
 			}
 			String road = incident.getRoad();
 			if (null != road && !road.equals("")) {
+				if (type.equals("word")) {
+					if (road.contains("<")) {
+						road = road.replaceAll("<", "&lt;");
+					}
+					if (road.contains(">")) {
+						road = road.replaceAll(">", "&gt;");
+					}
+				}
 				map.put("road", road);
 			} else {
 				map.put("road", "");
@@ -832,10 +843,14 @@ public class EmerIncidentImpl implements IEmerIncident {
 					Inci_Proposal inci_Proposal = allInciProposalByIncidentId.get(i);
 					String content = inci_Proposal.getContent();
 					if (null != content && !content.equals("")) {
-						stringBuilder.append((i + 1) + "、" + content);
-						stringBuilder.append(" </w:t></w:r></w:p><w:p><w:pPr></w:pPr>");
-						stringBuilder.append("<w:r><w:rPr>");
-						stringBuilder.append(" </w:rPr><w:t>  ");
+						if (type.equals("word")) {
+							stringBuilder.append((i + 1) + "、" + content);
+							stringBuilder.append("</w:t></w:r></w:p><w:p><w:pPr></w:pPr>");
+							stringBuilder.append("<w:r><w:rPr>");
+							stringBuilder.append("</w:rPr><w:t>");
+						} else {
+							stringBuilder.append((i + 1) + "、" + content + "\n");
+						}
 					}
 				}
 				if (stringBuilder.length() != 0) {
@@ -852,12 +867,17 @@ public class EmerIncidentImpl implements IEmerIncident {
 				for (int i = 0; i < allByIncidentId.size(); i++) {
 					try {
 						Inci_Resource inci_Resource = allByIncidentId.get(i);
-						resourceBuilder
-								.append((i + 1) + "、" + inci_Resource.getName() + "    数量：" + inci_Resource.getCount());
-						// 换行三个为一个整体
-						resourceBuilder.append(" </w:t></w:r></w:p><w:p><w:pPr></w:pPr>");
-						resourceBuilder.append("<w:r><w:rPr>");
-						resourceBuilder.append(" </w:rPr><w:t>  ");
+						if (type.equals("word")) {
+							resourceBuilder.append(
+									(i + 1) + "、" + inci_Resource.getName() + "    数量：" + inci_Resource.getCount());
+							// 换行三个为一个整体
+							resourceBuilder.append("</w:t></w:r></w:p><w:p><w:pPr></w:pPr>");
+							resourceBuilder.append("<w:r><w:rPr>");
+							resourceBuilder.append("</w:rPr><w:t>");
+						} else {
+							resourceBuilder.append((i + 1) + "、" + inci_Resource.getName() + "    数量："
+									+ inci_Resource.getCount() + "\n");
+						}
 					} catch (Exception e) {
 					}
 				}
@@ -875,10 +895,14 @@ public class EmerIncidentImpl implements IEmerIncident {
 				for (int i = 0; i < allInciHandleByIncidentId.size(); i++) {
 					Inci_Handle inci_Handle = allInciHandleByIncidentId.get(i);
 					if (null != inci_Handle.getDescription() && !inci_Handle.getDescription().equals("")) {
-						handleBuilder.append((i + 1) + "、" + inci_Handle.getDescription());
-						handleBuilder.append(" </w:t></w:r></w:p><w:p><w:pPr></w:pPr>");
-						handleBuilder.append("<w:r><w:rPr>");
-						handleBuilder.append(" </w:rPr><w:t>  ");
+						if (type.equals("word")) {
+							handleBuilder.append((i + 1) + "、" + inci_Handle.getDescription());
+							handleBuilder.append("</w:t></w:r></w:p><w:p><w:pPr></w:pPr>");
+							handleBuilder.append("<w:r><w:rPr>");
+							handleBuilder.append("</w:rPr><w:t>");
+						} else {
+							handleBuilder.append((i + 1) + "、" + inci_Handle.getDescription() + "\n");
+						}
 					}
 				}
 				if (handleBuilder.length() != 0) {
@@ -901,15 +925,28 @@ public class EmerIncidentImpl implements IEmerIncident {
 			} else {
 				map.put("summarizeOfCentre", "");
 			}
-			File file = WordGenerator.createDoc(map, "model", incidentNo);
-			String encode = WordGenerator.encode(WordGenerator.getBytes(file));
-			file.delete();
+
 			if (null != type && type.equals("word")) {
+				File file = WordGenerator.createDoc(map, "model", incidentNo);
+				String encode = WordGenerator.encode(WordGenerator.getBytes(file));
+				file.delete();
 				return encode;
 			} else if (null != type && type.equals("pdf")) {
+				String encode = "";
+				try {
+					byte[] bs = PdfGenerator.generate(map);
+					encode = WordGenerator.encode(bs);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (DocumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return encode;
+			} else {
 				return null;
 			}
-			return null;
 		}
 	}
 

@@ -39,8 +39,8 @@ public class WordGenerator {
 	}
 
 	public static File createDoc(Map<?, ?> dataMap, String type, String fileName) {
-		// String name = "temp" + (int) (Math.random() * 100000) + ".doc";
-		String name = fileName + ".doc";
+		String name = "temp" + (int) (Math.random() * 100000) + ".doc";
+		// String name = fileName + ".doc";
 		File f = new File(name);
 		Template t = allTemplates.get(type);
 		try {
